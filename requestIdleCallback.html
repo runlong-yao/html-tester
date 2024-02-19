@@ -1,0 +1,49 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="list"></div>
+  </body>
+  <script>
+    const list = new Array(1000).fill(0).map((_, index) => index);
+    let pos = 0;
+    const gap = 100;
+
+    requestAnimationFrame(draw);
+
+    function draw() {
+      if (pos < list.length) {
+        appendRows(list.slice(pos, pos + gap));
+        pos += gap;
+        requestAnimationFrame(draw);
+      }
+    }
+
+    function appendRows(values) {
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < values.length; i++) {
+        const row = document.createElement("div");
+        row.textContent = values[i];
+        fragment.appendChild(row);
+      }
+
+      document.querySelector("#list").append(fragment);
+    }
+  </script>
+  <script>
+    //当浏览器空闲时执行
+    //我们可以看到requestIdleCallback会卡着
+    const total = 10000;
+    let count = 0;
+    requestIdleCallback(function () {
+      if (count < total) {
+        console.log(count);
+        count++;
+        requestIdleCallback(arguments.callee);
+      }
+    });
+  </script>
+</html>

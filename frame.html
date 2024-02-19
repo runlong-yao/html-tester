@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div onclick="start()">start</div>
+    <ul id="ul"></ul>
+  </body>
+  <script>
+    function start() {
+      for (let i = 0; i < 200; i++) {
+        setTimeout(() => appendTo(i), 0);
+      }
+    }
+
+    function appendTo(i) {
+      const ulEl = document.querySelector("#ul");
+      const fragment = new DocumentFragment();
+      const li = fragment.appendChild(document.createElement("li"));
+      li.innerText = i;
+      ulEl.appendChild(fragment);
+    }
+  </script>
+</html>

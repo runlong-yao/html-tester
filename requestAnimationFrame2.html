@@ -1,0 +1,36 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="list"></div>
+  </body>
+  <script>
+    const list = new Array(100000).fill(0).map((_, index) => index);
+    let pos = 0;
+    const gap = 10;
+
+    requestAnimationFrame(draw);
+
+    function draw() {
+      if (pos < list.length) {
+        appendRows(list.slice(pos, pos + gap));
+        pos += gap;
+        requestAnimationFrame(draw);
+      }
+    }
+
+    function appendRows(values) {
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < values.length; i++) {
+        const row = document.createElement("div");
+        row.textContent = values[i];
+        fragment.appendChild(row);
+      }
+
+      document.querySelector("#list").append(fragment);
+    }
+  </script>
+</html>

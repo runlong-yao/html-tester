@@ -1,0 +1,64 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div onclick="insertByFragment()">fragment</div>
+
+    <div onclick="insertByDiv()">div</div>
+    <ul id="list"></ul>
+
+    <script>
+      const fruits = new Array(1000).fill("Apple");
+
+      function insertByFragment(params) {
+        const list = document.querySelector("#list");
+
+        const fragment = new DocumentFragment();
+        const offsetLeft = list.offsetLeft;
+
+        fruits.forEach((fruit) => {
+          const li = document.createElement("li");
+          li.textContent = fruit;
+          fragment.appendChild(li);
+        });
+
+        list.appendChild(fragment);
+      }
+
+      function insertByDiv() {
+        const list = document.querySelector("#list");
+
+        for (let fruit of fruits) {
+          const li = document.createElement("li");
+          li.textContent = fruit;
+          //不要循环打印，会降低脚本执行效率
+          //console.log(1)
+
+          list.appendChild(li);
+        }
+      }
+
+      function insertByDiv2() {
+        const list = document.querySelector("#list");
+
+        fruits.forEach((fruit) => {
+          const li = document.createElement("li");
+          li.textContent = fruit;
+
+          //TIP:会触发重绘导致渲染时间大幅增加
+          const offsetLeft = list.offsetLeft;
+
+          list.appendChild(li);
+        });
+      }
+
+      //   window.onload = () => {
+      //     insertByDiv();
+      //     // insertByFragment();
+      //   };
+    </script>
+  </body>
+</html>

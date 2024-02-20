@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebRTC: Simple RTCDataChannel sample</title>
+    <meta charset="utf-8" />
+    <script type="importmap">
+      {
+        "imports": {
+          "core": "./core.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import { initConnection } from "core";
+      /**
+       * @type {RTCPeerConnection}
+       */
+      let rtc;
+
+      let connectBtn;
+      let signalText
+      let iceText;
+      let setBtn
+      let offerInput
+      let iceInput
+
+
+      function startup() {
+        connectBtn = document.getElementById("connectBtn")
+        signalText = document.getElementById("signalText")
+        iceText = document.getElementById("iceText")
+        offerInput = document.getElementById("offerInput")
+        iceInput = document.getElementById("iceInput")
+
+        connectBtn.addEventListener("click", connect)
+        // createEl = document.getElementById("createSignal");
+        // mySignalEl = document.getElementById("mySignal");
+        // connectEl = document.getElementById("connect");
+        // answerStr = document.getElementById("answerStr")
+        // setAnswer = document.getElementById("setAnswer")
+        // msg = document.getElementById("msg")
+        // msgReceiver = document.getElementById("msgReceiver")
+        // send = document.getElementById("send");
+        // createEl.addEventListener("click", connect);
+        // setAnswer.addEventListener("click", setRtcAnswer);
+        // send.addEventListener("click", sendMsg)
+      }
+
+      function sendMsg() {
+        sendChannel.send(msg.value);
+      }
+
+      function setOffer() {
+        let signal = null
+        let ice = null
+        try{
+          signal  = JSON.parse(offerInput.value)
+        }catch{
+          throw "answer解析失败"
+        }
+
+
+        try{
+          ice=JSON.parse(iceInput.value)
+        }catch{}
+
+        rtc.setRemoteDescription(signal)
+        // rtc.addIceCandidate(ice)
+      }
+
+      let channel;
+
+
+
+      function connect() {
+        rtc = initConnection();
+
+        setOffer()
+
+        rtc.ondatachannel = (e)=>{
+          channel = e.channel
+          channel.onmessage = (e) => {
+            console.log("message", e);
+          }
+          channel.onopen = () => {
+            console.log('channel open');
+          }
+
+          channel.onclose = () => {
+            console.log('channel close');
+          }
+        }
+
+        rtc.onicecandidate = (e) => {
+          if(e.candidate){
+            iceText.innerHTML = JSON.stringify(e.candidate)
+          }
+        }
+
+        rtc.onsignalingstatechange= (event) => {
+          if(event.target.signalingState === "stable"){
+            console.log("连接建立成功")
+
+          }
+        };
+
+        rtc.createAnswer().then((signal) => {
+          rtc.setLocalDescription(signal);
+          signalText.innerHTML = JSON.stringify(signal);
+        })
+
+      }
+
+      window.addEventListener("load", startup);
+    </script>
+  </head>
+  <body>
+    <h1>answer</h1>
+
+    <div id="connectbox">
+      <p>
+        <textarea id="offerInput" placeholder="offer"></textarea>
+        <textarea id="iceInput" placeholder="ice"></textarea>
+        <button id="connectBtn">connect</button>
+      </p>
+      <p>
+        <pre id="signalText"></pre>
+        <pre id="iceText"></pre>
+      </p>
+
+  </div>
+  <div id="msgbox" style="display: none;">
+    <p>
+      <input id="msg"/>
+      <button id="send">发送</button>
+    </p>
+    <p id="msgReceiver">
+
+    </p>
+  </div>
+  </body>
+  <style>
+    #signalText::before{
+      content: "answer signal:";
+      font-weight: bold;
+    }
+
+    #iceText::before{
+      content: "ice:";
+      font-weight: bold;
+    }
+
+    textarea{
+      width: 200px;
+      height: 200px;
+    }
+
+    pre{
+      white-space: normal;
+    }
+  </style>
+</html>
